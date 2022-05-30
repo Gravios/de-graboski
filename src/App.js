@@ -1,8 +1,22 @@
-import { useRef, useState, useMemo, useEffect } from 'react';
-import { Canvas, useFrame, useThree, createPortal, } from '@react-three/fiber';
+
+import {  Fragment, useRef, useEffect, useState, useCallback, useContext, useMemo } from 'react'
+import { Canvas, useFrame, useThree, createPortal } from '@react-three/fiber';
 import { OrthographicCamera, useCamera } from '@react-three/drei';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import uuid from "short-uuid"
+//import { useDrag } from "@use-gesture/react"
 
+
+function useDrag(onDrag, onEnd) {
+  const [active, setActive] = useState(false)
+  const [, toggle] = useContext(camContext)
+  const activeRef = useRef()
+  const down = useCallback((e) => (setActive(true), toggle(false), e.stopPropagation(), e.target.setPointerCapture(e.pointerId)), [toggle])
+  const up = useCallback((e) => (setActive(false), toggle(true), e.target.releasePointerCapture(e.pointerId), onEnd && onEnd()), [onEnd, toggle])
+  const move = useCallback((event) => activeRef.current && (event.stopPropagation(), onDrag(event.unprojectedPoint)), [onDrag])
+  useEffect(() => void (activeRef.current = active))
+  return { onPointerDown: down, onPointerUp: up, onPointerMove: move }
+}
 // import { useSpring, animated } from '@react-spring/web'
 // import { useDrag } from '@use-gesture/react'
 //
@@ -54,8 +68,9 @@ const CameraController = () => {
   useEffect(
     () => {
       const controls = new OrbitControls(camera, gl.domElement);
-      controls.minDistance = 3;
-      controls.maxDistance = 1000;
+      controls.minDistance = 100;
+      controls.maxDistance = 1500;
+      controls.enablePan = false;
       return () => {
         controls.dispose();
       };
@@ -92,7 +107,7 @@ function Viewcube() {
   }, 1);
 
   return createPortal(
-    <>
+    <Fragment>
       <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 100]} />
       <mesh
         ref={ref}
@@ -107,13 +122,10 @@ function Viewcube() {
       </mesh>
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} intensity={0.5} />
-      </>,
+      </Fragment>,
     virtualScene
   )
 }
-
-
-
 
 
 const VideoElement = () => {
@@ -122,6 +134,7 @@ const VideoElement = () => {
   const virtualCam = useRef();
   const ref = useRef();
   const matrix = new Matrix4();
+  const aspect = size.width / camera.width;
 
   const [video] = useState(() => {
     const vid = document.createElement("video");
@@ -142,8 +155,13 @@ const VideoElement = () => {
     gl.clearDepth();
     gl.render(virtualScene, virtualCam.current);
   }, 1);
+  // const bind = useDrag(({ offset: [x, y] }) => {
+  //       const [,, z] = position;
+  //       setPosition([x / aspect, -y / aspect, z]);
+  // }, { pointerEvents: true });
+  // let bindDrag = useDrag()
   return createPortal(
-      <>
+      <Fragment>
         <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 1000]} />
           <mesh
             ref={ref}
@@ -155,11 +173,10 @@ const VideoElement = () => {
               <videoTexture attach="emissiveMap" args={[video]} />
             </meshStandardMaterial>
           </mesh>
-        </>,
+        </Fragment>,
       virtualScene
     );
 };
-
 
 function Box(props) {
   // This reference gives us direct access to the THREE.Mesh object
@@ -184,7 +201,7 @@ function Box(props) {
   )
 }
 
-function Sphere(props) {
+function Marker(props) {
   //console.log(props);
   // This reference gives us direct access to the THREE.Mesh object
   const ref = useRef()
@@ -200,23 +217,42 @@ function Sphere(props) {
       xyzData[index].MarkerXYZ[ref.markerIndex*3+2]);
     ref.current.geometry.computeVertexNormals();
   }
-
   );
+
+  const [items, set] = useState([])
+  const handleClick  = useCallback(e => set(items => [...items, uuid.generate()]), [], console.log('click'));
   //useFrame((state, delta) => (ref.index = ref.index ? 0 : 1))
   // Return the view, these are regular Threejs elements expressed in JSX
   return (
-    <mesh
-      {...props}
-      ref={ref}
-      scale={clicked ? 1.5 : 1}
-      onClick={(event) => click(!clicked)}
-      onPointerOver={(event) => hover(true)}
-      onPointerOut={(event) => hover(false)}>
-      <sphereGeometry args={[15, 64, 64]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : parseInt(marConf.markers[ref.markerIndex].color,16)} />
+    <Fragment>
+      <mesh
+        {...props}
+        ref={ref}
+        name={marConf.markers[ref.markerIndex].name}
+        scale={clicked ? 1.25 : 1}
+        onClick={handleClick}
+        onPointerOver={(event) => hover(true)}
+        onPointerOut={(event) => hover(false)}>
+        <sphereGeometry args={[15, 64, 64]} />
+        <meshStandardMaterial color={hovered ? 'hotpink' : parseInt(marConf.markers[ref.markerIndex].color,16)} />
+      </mesh>
+      {items.map((key, index) => (
+      <Spawned key={key} position={[ref.markerIndex*50, 1 + index * 100, 0]} />
+    ))}
+    </Fragment>
+  )
+}
+
+
+function Spawned(props) {
+  return (
+    <mesh {...props}>
+      <sphereGeometry attach="geometry" args={[30, 16, 16]} />
+      <meshStandardMaterial attach="material" color="hotpink" transparent />
     </mesh>
   )
 }
+
 
 function Arena(props) {
   const ref = useRef();
@@ -257,9 +293,8 @@ export default function App() {
                   shadow-camera-top={1000}
                   shadow-camera-bottom={-1000}/>
       <Arena             receiveShadow position={[  0, 0, 0]} />
-      {[...Array(marConf.markers.length).keys()].map( m =>  { return <Sphere castShadow receiveShadow key={m} markerIndex={m} position={[  0,80, 0]} />})}
+      {[...Array(marConf.markers.length).keys()].map( m =>  { return <Marker castShadow receiveShadow key={m} markerIndex={m} position={[  0,80, 0]} />})}
       <Viewcube />
-      <VideoElement />
     </Canvas>
 
   )
