@@ -1,0 +1,12 @@
+{
+  "markers" : [
+    { "label": "spine_lower",  "color": "0x0000ff" },
+    { "label": "pelvis_root",  "color": "0x0000ff" },
+    { "label": "spine_middle", "color": "0x0000ff" },
+    { "label": "spine_upper",  "color": "0x0000ff" },
+    { "label": "head_back",    "color": "0x0000ff" },
+    { "label": "head_left",    "color": "0x00ff00" },
+    { "label": "head_front",   "color": "0xff00ff" },
+    { "label": "head_right",   "color": "0xff0000" },
+    { "label": "head_top",     "color": "0x0000ff" }]
+}
