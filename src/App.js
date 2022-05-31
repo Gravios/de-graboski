@@ -1,67 +1,71 @@
 
 import {  Fragment, useRef, useEffect, useState, useCallback, useContext, useMemo } from 'react'
+import * as THREE from "three";
 import { Canvas, useFrame, useThree, createPortal } from '@react-three/fiber';
 import { OrthographicCamera, useCamera } from '@react-three/drei';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import uuid from "short-uuid"
-//import { useDrag } from "@use-gesture/react"
-
-
-function useDrag(onDrag, onEnd) {
-  const [active, setActive] = useState(false)
-  const [, toggle] = useContext(camContext)
-  const activeRef = useRef()
-  const down = useCallback((e) => (setActive(true), toggle(false), e.stopPropagation(), e.target.setPointerCapture(e.pointerId)), [toggle])
-  const up = useCallback((e) => (setActive(false), toggle(true), e.target.releasePointerCapture(e.pointerId), onEnd && onEnd()), [onEnd, toggle])
-  const move = useCallback((event) => activeRef.current && (event.stopPropagation(), onDrag(event.unprojectedPoint)), [onDrag])
-  useEffect(() => void (activeRef.current = active))
-  return { onPointerDown: down, onPointerUp: up, onPointerMove: move }
-}
-// import { useSpring, animated } from '@react-spring/web'
-// import { useDrag } from '@use-gesture/react'
-//
-// function Example() {
-//   const [{ x, y }, api] = useSpring(() => ({ x: 0, y: 0 }))
-//
-//   // Set the drag hook and define component movement based on gesture data.
-//   const bind = useDrag(({ down, movement: [mx, my] }) => {
-//     api.start({ x: down ? mx : 0, y: down ? my : 0 })
-//   })
-//
-//   // Bind it to a component.
-//   return <animated.div {...bind()} style={{ x, y, touchAction: 'none' }} />
-// }
-
-//import * as VR from "!exports-loader?WEBVR!three/examples/js/vr/WebVR";
-
-import { Scene, Matrix4 } from 'three'
-import * as THREE from "three";
-//import dynamic from "next/dynamic";
 import { round } from "mathjs";
-
-//const markers = dynamic(() => import('./data/marker_conf'));
-//const xyzData = dynamic(() => import('./data/marker_data'));
-//const xyzData =  import('./marker_data.json');
-
 
 import * as data from './data/marker_data.json';
 import * as markerConf from './data/marker_conf.json';
 import url from "./videos/rest_example.mp4"
 
+// LOAD data and configuration
 const xyzData = data;
 const marConf = markerConf;
 console.log(xyzData.length);
 console.log(xyzData);
+console.log(xyzData[1])
 var index = 1;
 var time = 0;
-var marIndex = 0;
+//var marIndex = 0;
+//var index = 0;
+//var position = [0,2];
 
-console.log(xyzData[1])
-
+// TODO: add to marker or position data
 const sampleRate = 60;
+const paused = false;
 
-var index = 0;
-var position = [0,2];
+//
+// const keyboardControls = () => {
+//   const keys = {
+//     KeyP: 'paused'
+//   }
+//
+//   const changeAnimationState = (key) => keys[key]
+//
+//   const [animationState, setAnimationState] = useState({
+//     paused: false,
+//   });
+//
+//   useEffect(() => {
+//     const handleKeyDown = (e) => {
+//       setAnimationState((m) => ({ ...m, [changeAnimationState(e.code)]: !animationState }))
+//     }
+//     document.addEventListener('keydown', handleKeyDown)
+//     return () => {
+//       document.removeEventListener('keydown', handleKeyDown)
+//     }
+//   }, [])
+//   return animationState
+// };
+//
+// const {paused} = keyboardControls();
+
+// function useDrag(onDrag, onEnd) {
+//   const [active, setActive] = useState(false)
+//   const [, toggle] = useContext(camContext)
+//   const activeRef = useRef()
+//   const down = useCallback((e) => (setActive(true), toggle(false), e.stopPropagation(), e.target.setPointerCapture(e.pointerId)), [toggle])
+//   const up = useCallback((e) => (setActive(false), toggle(true), e.target.releasePointerCapture(e.pointerId), onEnd && onEnd()), [onEnd, toggle])
+//   const move = useCallback((event) => activeRef.current && (event.stopPropagation(), onDrag(event.unprojectedPoint)), [onDrag])
+//   useEffect(() => void (activeRef.current = active))
+//   return { onPointerDown: down, onPointerUp: up, onPointerMove: move }
+// }
+
+
+
 
 const CameraController = () => {
   const { camera, gl } = useThree();
@@ -82,19 +86,31 @@ const CameraController = () => {
 
 function DataViewPane1D() {
   const { gl, scene, camera,size } = useThree();
-  const virtualScene = useMemo(() => new Scene(), []);
-  const virtualCamera = useRef();
   const ref = useRef();
+  return (
+    <Fragment>
+      <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 100]} />
+      <mesh
+        ref={ref}
+        raycast={useCamera(camera)}
+        position={[0, 0, 0]}>
+        <meshLambertMaterial attachArray="material"  color= 'white' />
+        <boxBufferGeometry attach="geometry" args={[60, 60, 60]} />
+      </mesh>
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} intensity={0.5} />
+      </Fragment>
+    )
 }
 
 
 function Viewcube() {
   const { gl, scene, camera, size } = useThree();
-  const virtualScene = useMemo(() => new Scene(), []);
+  const virtualScene = useMemo(() => new THREE.Scene(), []);
   const virtualCam = useRef();
   const ref = useRef();
   const [hover, set] = useState(null);
-  const matrix = new Matrix4();
+  const matrix = new THREE.Matrix4();
 
   useFrame(() => {
     matrix.copy(camera.matrix).invert();
@@ -128,6 +144,55 @@ function Viewcube() {
 }
 
 
+const VideoElementOld = () => {
+  const { gl, scene, camera, size } = useThree();
+  const virtualScene = useMemo(() => new THREE.Scene(), []);
+  const virtualCam = useRef();
+  const ref = useRef();
+  const matrix = new THREE.Matrix4();
+  const aspect = size.width / camera.width;
+
+  const [video] = useState(() => {
+    const vid = document.createElement("video");
+    vid.src = url;
+    vid.crossOrigin = "Anonymous";
+    vid.loop = true;
+    vid.muted = true;
+    vid.play();
+    return vid;
+  });
+
+  useFrame(() => {
+    //matrix.copy(camera.matrix).invert();
+    //ref.current.quaternion.setFromRotationMatrix(matrix);
+    //gl.autoClear = true;
+    gl.render(scene, camera);
+    gl.autoClear = false;
+    gl.clearDepth();
+    gl.render(virtualScene, virtualCam.current);
+  }, 1);
+  // const bind = useDrag(({ offset: [x, y] }) => {
+  //       const [,, z] = position;
+  //       setPosition([x / aspect, -y / aspect, z]);
+  // }, { pointerEvents: true });
+  // let bindDrag = useDrag()
+  return createPortal(
+      <Fragment>
+        <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 1000]} />
+          <mesh
+            ref={ref}
+            rotation={[0, 0, 0]}
+            position={[size.width / 4, size.height / 2-200, 0]}>
+            <planeGeometry args={[480,270, 2]} />
+            <meshStandardMaterial emissive={"white"} side={THREE.DoubleSide}>
+              <videoTexture attach="map" args={[video]} />
+              <videoTexture attach="emissiveMap" args={[video]} />
+            </meshStandardMaterial>
+          </mesh>
+        </Fragment>,
+      virtualScene
+    );
+};
 const VideoElement = () => {
   const { gl, scene, camera, size } = useThree();
   const virtualScene = useMemo(() => new Scene(), []);
@@ -204,11 +269,12 @@ function Box(props) {
 function Marker(props) {
   //console.log(props);
   // This reference gives us direct access to the THREE.Mesh object
-  const ref = useRef()
+  const ref = useRef();
   ref.markerIndex = props.markerIndex;
   // Hold state for hovered and clicked events
-  const [hovered, hover] = useState(false)
-  const [clicked, click] = useState(false)
+  const [hovered, hover] = useState(false);
+  const [clicked, click] = useState(false);
+  const [paused, pause] = useState(false);
   // Subscribe this component to the render-loop, rotate the mesh every frame
   useFrame((state, delta) => {
     ref.current.position.set(
@@ -219,8 +285,8 @@ function Marker(props) {
   }
   );
 
-  const [items, set] = useState([])
-  const handleClick  = useCallback(e => set(items => [...items, uuid.generate()]), [], console.log('click'));
+  const [items, set] = useState([]);
+  const handleClick  = useCallback(e => (set(items => [...items, uuid.generate()]), click(!clicked)), [items,clicked]);
   //useFrame((state, delta) => (ref.index = ref.index ? 0 : 1))
   // Return the view, these are regular Threejs elements expressed in JSX
   return (
@@ -229,7 +295,7 @@ function Marker(props) {
         {...props}
         ref={ref}
         name={marConf.markers[ref.markerIndex].name}
-        scale={clicked ? 1.25 : 1}
+        scale={clicked ? 1.5 : 1}
         onClick={handleClick}
         onPointerOver={(event) => hover(true)}
         onPointerOut={(event) => hover(false)}>
@@ -257,10 +323,11 @@ function Spawned(props) {
 function Arena(props) {
   const ref = useRef();
   useFrame((state, delta) => {
-    time += delta;
-    index = THREE.MathUtils.euclideanModulo( round(time * sampleRate) ,xyzData.length);
+    if (!paused) {
+      time += delta;
+      index = THREE.MathUtils.euclideanModulo( round(time * sampleRate) ,xyzData.length);
     }
-  );
+  });
 
   return (
     <mesh
