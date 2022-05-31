@@ -1,22 +1,23 @@
 
-import {  Fragment, useRef, useEffect, useState, useCallback, useContext, useMemo } from 'react'
+import  { Component, Fragment, useRef, useEffect, useState, useCallback, useContext, useMemo } from 'react';
 import * as THREE from "three";
 import { Canvas, useFrame, useThree, createPortal } from '@react-three/fiber';
 import { OrthographicCamera, useCamera } from '@react-three/drei';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import uuid from "short-uuid"
+import uuid from "short-uuid";
 import { round } from "mathjs";
+import ReactDOM from "react-dom/client";
 
-import * as data from './data/marker_data.json';
+import * as data       from './data/marker_data.json';
 import * as markerConf from './data/marker_conf.json';
-import url from "./videos/rest_example.mp4"
+import url             from "./videos/rest_example.mp4";
 
 // LOAD data and configuration
 const xyzData = data;
 const marConf = markerConf;
 console.log(xyzData.length);
 console.log(xyzData);
-console.log(xyzData[1])
+console.log(xyzData[1]);
 var index = 1;
 var time = 0;
 //var marIndex = 0;
@@ -25,33 +26,29 @@ var time = 0;
 
 // TODO: add to marker or position data
 const sampleRate = 60;
-const paused = false;
+var paused = false;
 
-//
-// const keyboardControls = () => {
-//   const keys = {
-//     KeyP: 'paused'
-//   }
-//
-//   const changeAnimationState = (key) => keys[key]
-//
-//   const [animationState, setAnimationState] = useState({
-//     paused: false,
-//   });
-//
-//   useEffect(() => {
-//     const handleKeyDown = (e) => {
-//       setAnimationState((m) => ({ ...m, [changeAnimationState(e.code)]: !animationState }))
-//     }
-//     document.addEventListener('keydown', handleKeyDown)
-//     return () => {
-//       document.removeEventListener('keydown', handleKeyDown)
-//     }
-//   }, [])
-//   return animationState
-// };
-//
-// const {paused} = keyboardControls();
+const useCodes = () => {
+  const codes = useRef(new Set())
+  useEffect(() => {
+    //const onKeyDown = (e) => codes.current.delete(e.code)
+    const onKeyUp = (e) => {
+      if (!codes.current.has(e.code)) {
+      codes.current.add(e.code);
+    }
+      else {
+        codes.current.delete(e.code);
+      }
+    }
+    //window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+    return () => {
+      //window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
+    }
+  }, [])
+  return codes
+}
 
 // function useDrag(onDrag, onEnd) {
 //   const [active, setActive] = useState(false)
@@ -212,19 +209,12 @@ const VideoElement = () => {
   });
 
   useFrame(() => {
-    //matrix.copy(camera.matrix).invert();
-    //ref.current.quaternion.setFromRotationMatrix(matrix);
-    //gl.autoClear = true;
     gl.render(scene, camera);
     gl.autoClear = false;
     gl.clearDepth();
     gl.render(virtualScene, virtualCam.current);
   }, 1);
-  // const bind = useDrag(({ offset: [x, y] }) => {
-  //       const [,, z] = position;
-  //       setPosition([x / aspect, -y / aspect, z]);
-  // }, { pointerEvents: true });
-  // let bindDrag = useDrag()
+
   return createPortal(
       <Fragment>
         <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 1000]} />
@@ -286,7 +276,7 @@ function Marker(props) {
   );
 
   const [items, set] = useState([]);
-  const handleClick  = useCallback(e => (set(items => [...items, uuid.generate()]), click(!clicked)), [items,clicked]);
+  const handleClick  = useCallback(e => (set(items => [...items, uuid.generate()]), click(!clicked), console.log(items)), [items,clicked]);
   //useFrame((state, delta) => (ref.index = ref.index ? 0 : 1))
   // Return the view, these are regular Threejs elements expressed in JSX
   return (
@@ -322,11 +312,15 @@ function Spawned(props) {
 
 function Arena(props) {
   const ref = useRef();
+  const code = useCodes()
   useFrame((state, delta) => {
     if (!paused) {
       time += delta;
       index = THREE.MathUtils.euclideanModulo( round(time * sampleRate) ,xyzData.length);
     }
+    if (code.current.has('KeyP'))       paused = true;
+    else if (!code.current.has('KeyP')) paused = false;
+
   });
 
   return (
