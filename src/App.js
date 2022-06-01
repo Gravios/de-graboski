@@ -1,8 +1,8 @@
 
-import  { Component, Fragment, useRef, useEffect, useState, useCallback, useContext, useMemo } from 'react';
+import  React, { Component, Fragment, useRef, useEffect, useState, useCallback, useContext, useMemo } from 'react';
 import * as THREE from "three";
 import { Canvas, useFrame, useThree, createPortal } from '@react-three/fiber';
-import { OrthographicCamera, useCamera } from '@react-three/drei';
+import { OrthographicCamera, Stats, useCamera } from '@react-three/drei';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import uuid from "short-uuid";
 import { round } from "mathjs";
@@ -18,15 +18,14 @@ const marConf = markerConf;
 console.log(xyzData.length);
 console.log(xyzData);
 console.log(xyzData[1]);
-var index = 1;
-var time = 0;
-//var marIndex = 0;
-//var index = 0;
-//var position = [0,2];
 
-// TODO: add to marker or position data
 const sampleRate = 60;
 var paused = false;
+const frameWindowLength = 360;
+const halfFrameWindowLength = round(frameWindowLength/2);
+var index = halfFrameWindowLength+1;
+var time = index/sampleRate;
+// TODO: add to marker or position data
 
 const useCodes = () => {
   const codes = useRef(new Set())
@@ -50,20 +49,6 @@ const useCodes = () => {
   return codes
 }
 
-// function useDrag(onDrag, onEnd) {
-//   const [active, setActive] = useState(false)
-//   const [, toggle] = useContext(camContext)
-//   const activeRef = useRef()
-//   const down = useCallback((e) => (setActive(true), toggle(false), e.stopPropagation(), e.target.setPointerCapture(e.pointerId)), [toggle])
-//   const up = useCallback((e) => (setActive(false), toggle(true), e.target.releasePointerCapture(e.pointerId), onEnd && onEnd()), [onEnd, toggle])
-//   const move = useCallback((event) => activeRef.current && (event.stopPropagation(), onDrag(event.unprojectedPoint)), [onDrag])
-//   useEffect(() => void (activeRef.current = active))
-//   return { onPointerDown: down, onPointerUp: up, onPointerMove: move }
-// }
-
-
-
-
 const CameraController = () => {
   const { camera, gl } = useThree();
   useEffect(
@@ -81,27 +66,69 @@ const CameraController = () => {
   return null;
 };
 
-function DataViewPane1D() {
-  const { gl, scene, camera,size } = useThree();
+
+function DisplayLine(props) {
   const ref = useRef();
+  const points = [...Array(frameWindowLength)];
+  for (var p=0; p<frameWindowLength;p++) points[p] = new THREE.Vector3(p,100,0);
+
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+
+  useFrame(() =>
+    ref.current.geometry.setFromPoints([...Array(frameWindowLength)].map((v,i) =>
+      new THREE.Vector3(xyzData[index+i-halfFrameWindowLength].MarkerXYZ[3*6+0],
+                        xyzData[index+i-halfFrameWindowLength].MarkerXYZ[3*6+1],
+                        xyzData[index+i-halfFrameWindowLength].MarkerXYZ[3*6+2])))
+  );
+
   return (
     <Fragment>
-      <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 100]} />
-      <mesh
-        ref={ref}
-        raycast={useCamera(camera)}
-        position={[0, 0, 0]}>
-        <meshLambertMaterial attachArray="material"  color= 'white' />
-        <boxBufferGeometry attach="geometry" args={[60, 60, 60]} />
-      </mesh>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={0.5} />
-      </Fragment>
-    )
+    <line
+      {...props}
+      ref={ref}
+      geometry={lineGeometry}>
+      <lineBasicMaterial attach="material" color={'#9c88ff'} linewidth={3} linecap={'round'} linejoin={'round'} />
+    </line>
+    </Fragment>
+  )}
+
+
+function DisplayLine2(props) {
+  const { gl, scene, camera, size } = useThree();
+  const virtualScene = useMemo(() => new THREE.Scene(), []);
+  const virtualCam = useRef();
+  const ref = useRef();
+  const points = [...Array(frameWindowLength)];
+  for (var p=0; p<frameWindowLength;p++) points[p] = new THREE.Vector3(p,100,0);
+
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+  useFrame(() => {
+    ref.current.geometry.setFromPoints([...Array(frameWindowLength)].map((v,i) =>
+      new THREE.Vector3(i,
+                        xyzData[index+i-halfFrameWindowLength].MarkerXYZ[3*props['markerIndex']+1],
+                        0)))
+
+    //gl.autoClear = true;
+    gl.render(scene, camera);
+    gl.autoClear = false;
+    gl.clearDepth();
+    gl.render(virtualScene, virtualCam.current);
+  },1);
+
+  return createPortal(
+        <Fragment>
+          <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 1000]} />
+          <line {...props} ref={ref} geometry={lineGeometry}>
+            <lineBasicMaterial attach="material" color={props["markerColor"]} linewidth={1} linecap={'round'} linejoin={'round'} />
+          </line>
+        </Fragment>,
+        virtualScene
+  );
 }
 
 
-function Viewcube() {
+
+function ViewCube() {
   const { gl, scene, camera, size } = useThree();
   const virtualScene = useMemo(() => new THREE.Scene(), []);
   const virtualCam = useRef();
@@ -140,14 +167,11 @@ function Viewcube() {
   )
 }
 
-
-const VideoElementOld = () => {
+const VideoElement = (props) => {
   const { gl, scene, camera, size } = useThree();
   const virtualScene = useMemo(() => new THREE.Scene(), []);
   const virtualCam = useRef();
   const ref = useRef();
-  const matrix = new THREE.Matrix4();
-  const aspect = size.width / camera.width;
 
   const [video] = useState(() => {
     const vid = document.createElement("video");
@@ -155,31 +179,24 @@ const VideoElementOld = () => {
     vid.crossOrigin = "Anonymous";
     vid.loop = true;
     vid.muted = true;
+    vid.playbackRate = 1;
+    vid.currentTime = time;
     vid.play();
     return vid;
   });
 
   useFrame(() => {
-    //matrix.copy(camera.matrix).invert();
-    //ref.current.quaternion.setFromRotationMatrix(matrix);
-    //gl.autoClear = true;
+    gl.autoClear = true;
     gl.render(scene, camera);
     gl.autoClear = false;
     gl.clearDepth();
     gl.render(virtualScene, virtualCam.current);
   }, 1);
-  // const bind = useDrag(({ offset: [x, y] }) => {
-  //       const [,, z] = position;
-  //       setPosition([x / aspect, -y / aspect, z]);
-  // }, { pointerEvents: true });
-  // let bindDrag = useDrag()
+
   return createPortal(
       <Fragment>
         <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 1000]} />
-          <mesh
-            ref={ref}
-            rotation={[0, 0, 0]}
-            position={[size.width / 4, size.height / 2-200, 0]}>
+          <mesh {...props} ref={ref} >
             <planeGeometry args={[480,270, 2]} />
             <meshStandardMaterial emissive={"white"} side={THREE.DoubleSide}>
               <videoTexture attach="map" args={[video]} />
@@ -190,75 +207,12 @@ const VideoElementOld = () => {
       virtualScene
     );
 };
-const VideoElement = () => {
-  const { gl, scene, camera, size } = useThree();
-  const virtualScene = useMemo(() => new Scene(), []);
-  const virtualCam = useRef();
-  const ref = useRef();
-  const matrix = new Matrix4();
-  const aspect = size.width / camera.width;
-
-  const [video] = useState(() => {
-    const vid = document.createElement("video");
-    vid.src = url;
-    vid.crossOrigin = "Anonymous";
-    vid.loop = true;
-    vid.muted = true;
-    vid.play();
-    return vid;
-  });
-
-  useFrame(() => {
-    gl.render(scene, camera);
-    gl.autoClear = false;
-    gl.clearDepth();
-    gl.render(virtualScene, virtualCam.current);
-  }, 1);
-
-  return createPortal(
-      <Fragment>
-        <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 1000]} />
-          <mesh
-            ref={ref}
-            rotation={[0, 0, 0]}
-            position={[size.width / 4, size.height / 2-200, 0]}>
-            <planeGeometry args={[480,270, 2]} />
-            <meshStandardMaterial emissive={"white"} side={THREE.DoubleSide}>
-              <videoTexture attach="map" args={[video]} />
-              <videoTexture attach="emissiveMap" args={[video]} />
-            </meshStandardMaterial>
-          </mesh>
-        </Fragment>,
-      virtualScene
-    );
-};
-
-function Box(props) {
-  // This reference gives us direct access to the THREE.Mesh object
-  const ref = useRef();
-  // Hold state for hovered and clicked events
-  const [hovered, hover] = useState(false);
-  const [clicked, click] = useState(false);
-  // Subscribe this component to the render-loop, rotate the mesh every frame
-  useFrame((state, delta) => (ref.current.rotation.x += 0.01));
-  // Return the view, these are regular Threejs elements expressed in JSX
-  return (
-    <mesh
-      {...props}
-      ref={ref}
-      scale={clicked ? 1.5 : 1}
-      onClick={(event) => click(!clicked)}
-      onPointerOver={(event) => hover(true)}
-      onPointerOut={(event) => hover(false)}>
-      <boxGeometry args={[30, 30, 1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-    </mesh>
-  )
-}
 
 function Marker(props) {
   //console.log(props);
   // This reference gives us direct access to the THREE.Mesh object
+  const { gl , scene } = useThree();
+
   const ref = useRef();
   ref.markerIndex = props.markerIndex;
   // Hold state for hovered and clicked events
@@ -271,34 +225,55 @@ function Marker(props) {
       xyzData[index].MarkerXYZ[ref.markerIndex*3+0],
       xyzData[index].MarkerXYZ[ref.markerIndex*3+1],
       xyzData[index].MarkerXYZ[ref.markerIndex*3+2]);
-    ref.current.geometry.computeVertexNormals();
+    //ref.current.geometry.computeVertexNormals();
   }
   );
 
   const [items, set] = useState([]);
-  const handleClick  = useCallback(e => (set(items => [...items, uuid.generate()]), click(!clicked), console.log(items)), [items,clicked]);
+  const handleClick  = useCallback(e => {
+      click(!clicked);
+      if (items.length<1) {
+        set(items => [...items, uuid.generate()])
+      }
+    },
+    [items,clicked]);
   //useFrame((state, delta) => (ref.index = ref.index ? 0 : 1))
   // Return the view, these are regular Threejs elements expressed in JSX
+
   return (
     <Fragment>
       <mesh
         {...props}
         ref={ref}
         name={marConf.markers[ref.markerIndex].name}
-        scale={clicked ? 1.5 : 1}
+        scale={clicked ? 1.25 : 1}
         onClick={handleClick}
-        onPointerOver={(event) => hover(true)}
-        onPointerOut={(event) => hover(false)}>
-        <sphereGeometry args={[15, 64, 64]} />
-        <meshStandardMaterial color={hovered ? 'hotpink' : parseInt(marConf.markers[ref.markerIndex].color,16)} />
+        onPointerOver={(event) => hover(true) }
+        onPointerOut ={(event) => hover(false)}>
+        <sphereGeometry       attach="geometry" args={[15, 16, 16]} />
+        <meshStandardMaterial attach="material"
+          color={hovered ? 'gold' : parseInt(marConf.markers[ref.markerIndex].color,16)} />
       </mesh>
-      {items.map((key, index) => (
-      <Spawned key={key} position={[ref.markerIndex*50, 1 + index * 100, 0]} />
+      { items.map((key, index) => (
+       <SpawnedLine key={key} ref={ref} visible={clicked} />
     ))}
+
     </Fragment>
   )
 }
+    //   { items.map((key, index) => (
+    //    <SpawnedVideo key={key} ref={ref} visible={clicked} />
+    // ))}
 
+const SpawnedLine = React.forwardRef((props,ref) => {
+  const { gl,scene,camera, size} = useThree();
+  return(<DisplayLine2 {...props}  markerIndex={ref.markerIndex} markerColor={parseInt(marConf.markers[ref.markerIndex].color,16)} position={[ size.width/4 - 490 , size.height/2 - 200, 0]} />)
+});
+
+const SpawnedVideo = React.forwardRef((props,ref) => {
+  const { gl,scene,camera, size} = useThree();
+  return (  <VideoElement {...props}  position={[ size.width/4 - 490 * ref.markerIndex, size.height/2 - 200, 0]} /> )
+});
 
 function Spawned(props) {
   return (
@@ -309,7 +284,6 @@ function Spawned(props) {
   )
 }
 
-
 function Arena(props) {
   const ref = useRef();
   const code = useCodes()
@@ -318,8 +292,8 @@ function Arena(props) {
       time += delta;
       index = THREE.MathUtils.euclideanModulo( round(time * sampleRate) ,xyzData.length);
     }
-    if (code.current.has('KeyP'))       paused = true;
-    else if (!code.current.has('KeyP')) paused = false;
+    if (code.current.has('Space'))       paused = true;
+    else if (!code.current.has('Space')) paused = false;
 
   });
 
@@ -333,12 +307,13 @@ function Arena(props) {
   )
 }
 
-
-
+console.log(window.devicePixelRatio);
 export default function App() {
   return (
+    <Fragment>
     <Canvas
-     shadows={{type:"ShawdowMap"}}
+      dpr={window.devicePixelRatio}
+      shadows={{type:"ShawdowMap"}}
       colormanagment="true"
       shadowmap="true"
       camera={{ position: [500, 800, 5], fov: 50,far:2000}}>
@@ -355,8 +330,11 @@ export default function App() {
                   shadow-camera-bottom={-1000}/>
       <Arena             receiveShadow position={[  0, 0, 0]} />
       {[...Array(marConf.markers.length).keys()].map( m =>  { return <Marker castShadow receiveShadow key={m} markerIndex={m} position={[  0,80, 0]} />})}
-      <Viewcube />
+      <ViewCube />
+      <DisplayLine position={[0,0,0]} />
     </Canvas>
+    <Stats showPanel={0} className="stats" />
+    </Fragment>
 
   )
 }
