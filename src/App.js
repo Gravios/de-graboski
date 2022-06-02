@@ -54,14 +54,10 @@ const useCodes = () => {
 
 const OrthoToCamera = ({ children }) => {
   const ref = useRef(null);
-  console.log(ref);
   const { camera } = useThree();
   useFrame(() => {
     ref.current.lookAt(camera.position)
   });
-
-
-  //camera.attach(ref.current);
   return <group ref={ref}>{children}</group>
 }
 
@@ -158,7 +154,7 @@ function DisplayLine3(props) {
       new THREE.Vector3(i,
                         xyzData[index+i-halfFrameWindowLength].MarkerXYZ[3*6+1],
                         20)))
-    //ref.current.lookAt(camera);
+
 
     //gl.autoClear = true;
   },1);
@@ -388,6 +384,7 @@ export default function App() {
             <DisplayLine3/>
           </OrthoToCamera>
         </Draggable>
+
 
 
 
