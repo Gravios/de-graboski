@@ -92,7 +92,6 @@ function DisplayLine(props) {
     </Fragment>
   )}
 
-
 function DisplayLine2(props) {
   const { gl, scene, camera, size } = useThree();
   const virtualScene = useMemo(() => new THREE.Scene(), []);
@@ -125,8 +124,6 @@ function DisplayLine2(props) {
         virtualScene
   );
 }
-
-
 
 function ViewCube() {
   const { gl, scene, camera, size } = useThree();
@@ -290,7 +287,7 @@ function Arena(props) {
   useFrame((state, delta) => {
     if (!paused) {
       time += delta;
-      index = THREE.MathUtils.euclideanModulo( round(time * sampleRate) ,xyzData.length);
+      index = THREE.MathUtils.euclideanModulo( round(time * sampleRate) ,xyzData.length-frameWindowLength-1);
     }
     if (code.current.has('Space'))       paused = true;
     else if (!code.current.has('Space')) paused = false;
@@ -316,7 +313,7 @@ export default function App() {
       shadows={{type:"ShawdowMap"}}
       colormanagment="true"
       shadowmap="true"
-      camera={{ position: [500, 800, 5], fov: 50,far:2000}}>
+      camera={{ position: [1000, 1200, 5], fov: 50,far:2000}}>
       <CameraController />
       <pointLight position={[0, 300, 0]}
                   castShadow
