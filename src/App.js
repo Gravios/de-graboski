@@ -2,8 +2,9 @@
 import  React, { Component, Fragment, useRef, useEffect, useState, useCallback, useContext, useMemo } from 'react';
 import * as THREE from "three";
 import { Canvas, useFrame, useThree, createPortal } from '@react-three/fiber';
-import { OrthographicCamera, Stats, useCamera } from '@react-three/drei';
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls,OrthographicCamera, Plane, Stats, useCamera } from '@react-three/drei';
+//import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { DragControls } from "three/examples/jsm/controls/DragControls";
 import uuid from "short-uuid";
 import { round } from "mathjs";
 import ReactDOM from "react-dom/client";
@@ -49,23 +50,42 @@ const useCodes = () => {
   return codes
 }
 
-const CameraController = () => {
-  const { camera, gl } = useThree();
-  useEffect(
-    () => {
-      const controls = new OrbitControls(camera, gl.domElement);
-      controls.minDistance = 100;
-      controls.maxDistance = 1500;
-      controls.enablePan = false;
-      return () => {
-        controls.dispose();
-      };
-    },
-    [camera, gl]
-  );
-  return null;
-};
 
+
+const OrthoToCamera = ({ children }) => {
+  const ref = useRef(null);
+  console.log(ref);
+  const { camera } = useThree();
+  useFrame(() => {
+    ref.current.lookAt(camera.position)
+  });
+
+
+  //camera.attach(ref.current);
+  return <group ref={ref}>{children}</group>
+}
+
+
+const Draggable = ({ children }) => {
+    const ref = useRef(null);
+    const { camera, gl, scene } = useThree();
+
+    useEffect(() => {
+        const controls = new DragControls(ref.current.children, camera, gl.domElement);
+        controls.transformGroup = true;
+
+        const orbitControls = scene.orbitControls;
+
+        controls.addEventListener('dragstart', () => {
+            orbitControls.enabled = false;
+        });
+        controls.addEventListener('dragend', () => {
+            orbitControls.enabled = true;
+        });
+    }, [camera, gl.domElement, scene]);
+
+    return <group ref={ref}>{children}</group>
+}
 
 function DisplayLine(props) {
   const ref = useRef();
@@ -124,6 +144,34 @@ function DisplayLine2(props) {
         virtualScene
   );
 }
+
+function DisplayLine3(props) {
+  const { gl,camera,scene } = useThree();
+
+  const ref = useRef();
+  const points = [...Array(frameWindowLength)];
+  for (var p=0; p<frameWindowLength;p++) points[p] = new THREE.Vector3(p,100,0);
+
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+  useFrame(() => {
+    ref.current.geometry.setFromPoints([...Array(frameWindowLength)].map((v,i) =>
+      new THREE.Vector3(i,
+                        xyzData[index+i-halfFrameWindowLength].MarkerXYZ[3*6+1],
+                        20)))
+    //ref.current.lookAt(camera);
+
+    //gl.autoClear = true;
+  },1);
+
+return (
+  <Fragment>
+          <line {...props} ref={ref} geometry={lineGeometry}>
+            <lineBasicMaterial attach="material" color={"hotpink"} linewidth={1} linecap={'round'} linejoin={'round'} />
+          </line>
+  </Fragment>
+  );
+}
+
 
 function ViewCube() {
   const { gl, scene, camera, size } = useThree();
@@ -264,7 +312,17 @@ function Marker(props) {
 
 const SpawnedLine = React.forwardRef((props,ref) => {
   const { gl,scene,camera, size} = useThree();
-  return(<DisplayLine2 {...props}  markerIndex={ref.markerIndex} markerColor={parseInt(marConf.markers[ref.markerIndex].color,16)} position={[ size.width/4 - 490 , size.height/2 - 200, 0]} />)
+  return (
+    <Fragment>
+      <Draggable>
+      <DisplayLine2
+      {...props}
+      markerIndex={ref.markerIndex}
+      markerColor={parseInt(marConf.markers[ref.markerIndex].color,16)}
+      position={[ size.width/4 - 490 , size.height/2 - 200, 0]} />
+      </Draggable>
+      </Fragment>
+    );
 });
 
 const SpawnedVideo = React.forwardRef((props,ref) => {
@@ -314,7 +372,25 @@ export default function App() {
       colormanagment="true"
       shadowmap="true"
       camera={{ position: [1000, 1200, 5], fov: 50,far:2000}}>
-      <CameraController />
+
+      <OrbitControls
+        attach="orbitControls"
+        minDistance={100}
+        maxDistance={1500}
+        enablePan={false}  />
+
+
+        <Draggable>
+          <OrthoToCamera>
+            <Plane args={[400,200]} position={[180,100,0]}>
+              <meshStandardMaterial attach="material" emissive={"hotpink"} side={THREE.DoubleSide} />
+            </Plane>
+            <DisplayLine3/>
+          </OrthoToCamera>
+        </Draggable>
+
+
+
       <pointLight position={[0, 300, 0]}
                   castShadow
                   shadow-mapSize-height={2048}
@@ -325,7 +401,7 @@ export default function App() {
                   shadow-camera-left={-1000}
                   shadow-camera-top={1000}
                   shadow-camera-bottom={-1000}/>
-      <Arena             receiveShadow position={[  0, 0, 0]} />
+        <Arena             receiveShadow position={[  0, 0, 0]} />
       {[...Array(marConf.markers.length).keys()].map( m =>  { return <Marker castShadow receiveShadow key={m} markerIndex={m} position={[  0,80, 0]} />})}
       <ViewCube />
       <DisplayLine position={[0,0,0]} />
