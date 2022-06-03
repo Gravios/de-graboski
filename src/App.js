@@ -378,7 +378,7 @@ export default function App() {
 
         <Draggable>
           <OrthoToCamera>
-            <Plane args={[400,200]} position={[180,100,0]}>
+            <Plane args={[frameWindowLength*1.1,frameWindowLength/2]} position={[frameWindowLength/2,100,0]}>
               <meshStandardMaterial attach="material" emissive={"hotpink"} side={THREE.DoubleSide} />
             </Plane>
             <DisplayLine3/>
@@ -403,7 +403,7 @@ export default function App() {
       <ViewCube />
       <DisplayLine position={[0,0,0]} />
     </Canvas>
-    <Stats showPanel={0} className="stats" />
+    {/*<Stats showPanel={0} className="stats" />*/}
     </Fragment>
 
   )
