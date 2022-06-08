@@ -379,7 +379,7 @@ export default function App() {
         <Draggable>
           <OrthoToCamera>
             <Plane args={[frameWindowLength*1.1,frameWindowLength/2]} position={[frameWindowLength/2,100,0]}>
-              <meshStandardMaterial attach="material" emissive={"hotpink"} side={THREE.DoubleSide} />
+              <meshStandardMaterial attach="material" emissive={"white"} side={THREE.DoubleSide} />
             </Plane>
             <DisplayLine3/>
           </OrthoToCamera>
