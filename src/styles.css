@@ -4,14 +4,15 @@ html {
 }
 
 body {
-  background-color: black;
+  background-color: #1f1f1f;
+  color: white;
   margin: 0;
 }
 
 
 .container-threejs {
-  width: 90vw;
   height: 100vh;
+  width: 90vw;
 }
 
 .profile {
@@ -19,7 +20,21 @@ body {
   margin-right: auto;
 }
 h2.profile {
-  font-color: #1f1f1f;
+  color: white;
+  font-size: 24pt;
+}
+h2.nav-index {
+  color: white;
+  text-align: right;
+  writing-mode: vertical-rl;
+  text-orientation: sideways-right;
+}
+
+body.p.profile {
+  background-color: white;
+  color: white;
+  font-size: 18pt;
+  justify-content: center;
 }
 
 img.profile {
