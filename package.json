@@ -14,6 +14,7 @@
     "@types/three": "0.139.0",
     "@use-gesture/react": "^10.2.15",
     "fs": "^0.0.1-security",
+    "gsap": "^3.11.0",
     "http": "^0.0.1-security",
     "mathjs": "^10.6.0",
     "next": "^12.1.6",
