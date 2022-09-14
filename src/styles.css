@@ -19,6 +19,9 @@ body {
   margin: 0;
 }
 
+#animation-asset {
+  display: none;
+}
 
 h2 {
   color: white;

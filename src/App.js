@@ -22,6 +22,7 @@ import * as markerConf from './data/marker_conf.json';
 import url             from "./videos/rest_example.mp4";
 import gsapCore from 'gsap/gsap-core';
 
+
 // LOAD data and configuration
 const xyzData = data;
 const marConf = markerConf;
