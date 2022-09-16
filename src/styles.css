@@ -19,7 +19,7 @@ body {
   margin: 0;
 }
 
-#animation-asset {
+.animation-asset{
   display: none;
 }
 
@@ -50,6 +50,10 @@ h2 {
     display: inline-block;
     float: none;
 }
+#navbar img{
+  width: 100%;
+}
+
 #navbar li a {
     color: #f1f1f1;
     display: block;
@@ -58,8 +62,11 @@ h2 {
     text-decoration: none;
 }
 #navbar li a:hover {
-    background-color: #000555;
+    background-color: #949494;
     color: white;
+}
+#navbar li img:hover{
+  filter: invert(1);
 }
 #navbar li a:active {
   background-color: #000555;
@@ -72,13 +79,16 @@ h2 {
 
 
 
-div.row {
+div.row-page {
   display: flex;
+  text-align: center;
 }
 div.column-nav {
   width: 10%;
 } 
 div.column-content {
+  display: flexbox;
+  align-content: center;
   width:90%;
 }
 
