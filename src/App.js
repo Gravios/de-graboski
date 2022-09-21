@@ -274,6 +274,9 @@ function Arena(props) {
 
 
 export default function App() {
+
+  const frameWindowLength = 360;
+  const halfFrameWindowLength = round(frameWindowLength/2);
   return (
     <Fragment>
     <Canvas
@@ -290,14 +293,14 @@ export default function App() {
         enablePan={false}  />
 
 
-      <Draggable>
+      {/* <Draggable>
         <OrthoToCamera>
           <Plane args={[frameWindowLength*1.1,frameWindowLength/2]} position={[frameWindowLength/2,100,0]}>
             <meshStandardMaterial attach="material" emissive={"white"} side={THREE.DoubleSide} />
           </Plane>
           <DisplayLine3/>
         </OrthoToCamera>
-      </Draggable>
+      </Draggable> */}
 
 
       <pointLight position={[0, 300, 0]}
@@ -311,12 +314,13 @@ export default function App() {
                   shadow-camera-top={1000}
                   shadow-camera-bottom={-1000}/>
 
-        <Arena  receiveShadow position={[  0, 0, 0]} />
+      <Arena  receiveShadow position={[  0, 0, 0]} />
         
-        {[...Array(marConf.markers.length).keys()].map( m =>  { return <Marker castShadow receiveShadow key={m} markerIndex={m} position={[  0,80, 0]} />})}
-      
+      {[...Array(marConf.markers.length).keys()].map( m =>  { return <Marker castShadow receiveShadow key={m} markerIndex={m} position={[  0,80, 0]} />})}
+        
       <ViewCube />
       
+      {/* <Plane args={[frameWindowLength*1.1,frameWindowLength/2]} position={[ 500/4 - 490 , 400/2 - 200, 0]}></Plane> */}
       <DisplayLine position={[0,0,0]} />
     </Canvas>
     {/*<Stats showPanel={0} className="stats" />*/}
