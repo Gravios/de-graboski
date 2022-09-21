@@ -26,14 +26,15 @@
 
   <body>
     <noscript> You need to enable JavaScript to run this app. </noscript>
+    
     <header>
       <div id="nav-placeholder" style="width:100%"></div>
     </header>
 
-    <h1 style="height: 64px"></h1>
+    <div><h1 style="height: 64px;"></h1></div>
 
     <section id="justin">
-      <div class="row-page">
+      <div class="page-row">
 
         <div class="content-column">
 
@@ -42,15 +43,14 @@
           <div class="content-row">
             <div class="content-box">
               <img
-                class="profile"
+                class="profile-pic"
                 src="./img/portrait.png"
                 alt="Justin Graboski"
               />
             </div>
             <div class="content-text">
               <h1>
-                Neuroscience<br />
-                Motion Capture<br />
+                Neuroscience &<br />
                 Machine Learning<br />
               </h1>
             </div>
@@ -61,6 +61,11 @@
                 src="./img/hippocampus_cajal_black.png"
                 alt=""
               /> -->
+              <img
+                class="profile-hex"
+                src="./img/neuron-bg-img.png"
+                alt=""
+              />
             </div>
           </div>
 
@@ -84,7 +89,7 @@
     </section>
 
     <section id="placefields">
-      <div class="row-page">
+      <div class="page-row">
         <div class="content-column">
           <p>Add information about placefields.</p>
           <canvas id="canvas1"></canvas>
@@ -97,13 +102,13 @@
         />
 
         <div class="column-nav">
-          <h2 class="nav-index">&nbsp0002 Place Cells</h2>
+          <h2 class="nav-index">&nbsp0002 Space</h2>
         </div>
       </div>
     </section>
 
     <section id="motioncapture">
-      <div class="row-page">
+      <div class="page-row">
         <div class="content-canvas" id="mocap"> </div>
         <div class="column-nav">
           <h2 class="nav-index">&nbsp0003 Motion Capture</h2>
