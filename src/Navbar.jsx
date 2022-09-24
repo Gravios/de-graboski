@@ -1,5 +1,9 @@
+import React from "react";
+import { BrowserRouter, Route,  Link } from "react-router-dom";
 
-<nav>
+export default function Navbar() {
+    return (
+        <nav>
   <div class="navbar">
     <i class="bx bx-menu"></i>
     <div class="logo">
@@ -30,7 +34,7 @@
                 <li><a href="#">Phase Precession</a></li>
               </ul>
             </li>
-            <!-- <li class="more">
+            {/* <li class="more">
                 <span>
                     <a href="#">Place Cells</a>
                     <i class="bx bxs-chevron-right arrow more-arrow"></i>
@@ -39,7 +43,7 @@
                     <li><a href="#">Remapping</a></li>
                     <li><a href="#">Phase Precession</a></li>
                 </ul>
-            </li> -->
+            </li> */}
             <li class="more">
               <span
                 ><a href="thesis.html#justin">Place Cells</a>
@@ -62,7 +66,7 @@
                 <li><a href="#">Features</a></li>
               </ul>
             </li>
-            <!-- <li class="more">
+            {/*<!-- <li class="more">
               <span
                 ><a href="#">More</a>
                 <i class="bx bxs-chevron-right arrow more-arrow"></i>
@@ -72,10 +76,11 @@
                 <li><a href="#">Pre-loader</a></li>
                 <li><a href="#">Glassmorphism</a></li>
               </ul>
-            </li> -->
+            </li> --> */}
+
           </ul>
         </li>
-        <!-- <li>
+        {/*<!-- <li>
           <a href="#motioncapture">MOTION CAPTURE</a>
           <i class="bx bxs-chevron-down js-arrow arrow"></i>
           <ul class="js-sub-menu sub-menu">
@@ -83,17 +88,20 @@
             <li><a href="#">Annotation</a></li>
             <li><a href="#">Features</a></li>
           </ul>
-        </li> -->
+        </li> -->*/}
         <li><a href="#">SOFTWARE</a></li>
-        <!-- <li><a href="#">CONTACT</a></li> -->
+        {/*<!-- <li><a href="#">CONTACT</a></li> -->*/}
       </ul>
     </div>
-    <!-- <div class="search-box">
+    {/*<!-- <div class="search-box">
       <i class="bx bx-search"></i>
       <div class="input-box">
         <input type="text" placeholder="Search..." />
       </div>
-    </div> -->
+    </div> --> */}
     <a class="cta" href="#"><button>Contact</button></a>
   </div> 
 </nav>
+    );
+};
+
