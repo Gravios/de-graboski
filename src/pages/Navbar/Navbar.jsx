@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Link } from "react-router-dom";
 export default function Navbar() {
   return (
     <>
+    <header>
       <nav>
         <div className="navbar">
           <i className="bx bx-menu"></i>
@@ -23,20 +24,20 @@ export default function Navbar() {
             </div>
             <ul className="links">
               <li>
-                <a href="#justin">ABOUT ME</a>
+                <a href="/#justin">ABOUT ME</a>
               </li>
               <li>
-                <a href="#placefields">PHD THESIS</a>
+                <a href="/thesis">PHD THESIS</a>
                 <i className="bx bxs-chevron-down htmlcss-arrow arrow"></i>
                 <ul className="htmlCss-sub-menu sub-menu">
                   <li>
-                    <a href="#">Introduction</a>
+                    <a href="/thesis#intro">Introduction</a>
                   </li>
                   <li>
-                    <a href="#">Navigation</a>
+                    <a href="/thesis#nav">Navigation</a>
                   </li>
                   <li>
-                    <a href="#">Behavior</a>
+                    <a href="/thesis#bhv">Behavior</a>
                   </li>
                   <li className="more">
                     <span>
@@ -138,6 +139,8 @@ export default function Navbar() {
           </a>
         </div>
       </nav>
+      </header>
+      <div><h1 className="header-space"></h1></div>
     </>
   );
 }

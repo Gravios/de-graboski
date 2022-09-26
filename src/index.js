@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { Layout } from "./pages/Layout";
-import { Home } from "./pages/Home.jsx";
+import { Home } from "./pages/Home/Home.jsx";
 import { Thesis } from "./pages/Thesis";
 import { NoPage } from "./pages/NoPage";
 
@@ -28,15 +28,15 @@ export default function Site() {
 
 
 window.addEventListener("load", function () {
-  const canvas = document.getElementById('canvas1');
-  const ctx = canvas.getContext('2d');
-  canvas.width = 500;
-  canvas.height = 400;
+  // const canvas = document.getElementById('canvas1');
+  // const ctx = canvas.getContext('2d');
+  // canvas.width = 500;
+  // canvas.height = 400;
 
-  const game = new Game(canvas.width, canvas.height);
+  // const game = new Game(canvas.width, canvas.height);
 
+  //createRoot(document.getElementById("root")).render(<><Site /> <App /></>);
   createRoot(document.getElementById("root")).render(<Site />);
-
-  createRoot(document.getElementById("mocap")).render(<App />)
+  //createRoot(document.getElementById("mocap")).render(<App />)
   
 });

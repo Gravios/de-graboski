@@ -1,0 +1,156 @@
+
+:root {
+    --main-border-color: #32de7fff;
+    --pcolor-dark: #353547;
+    --nav-background-color: #535878;
+    --nav-background-color-hover: #2c2c3b;
+    --nav-height: 64px;
+  }
+  
+  
+  
+ 
+  
+  div { 
+    display: flex;
+  }
+  
+  
+  div .page-row {
+    width: 100%;
+    max-width: 2800px;
+    /* z-index: -100; */
+  }
+  
+  div .column-nav {
+    height: 100%;
+    width:3%;
+    min-width: 80px;
+    /* z-index: -9; */
+  }
+  
+  div .content-column {
+    flex-direction: column;
+    width: 97%;
+    max-width: 2760px;
+    color: #353547;
+    /* z-index: -8; */
+  }
+  
+    
+  div .content-row {
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    min-height: 64px;
+    /* z-index: -98; */
+  }
+  
+  div .content-box {
+    flex-direction: row;
+    width:25%;
+    padding-left: 5%;
+    padding-right: 5%;
+    text-align: left;
+    /* z-index: -97; */
+    justify-content: center;
+  }
+  div .content-text {
+    flex-direction: column;
+    padding-left: 5%;
+    width:45%;
+    margin-bottom: auto;
+    text-align: left;
+    /* z-index: -97; */
+    justify-content: center;
+  }
+  
+  div .content-canvas {
+    flex-direction: column;
+    width: 97%;
+    max-width: 2760px;
+    color: #353547;
+  }
+  
+  div .mocap-box {
+    flex-direction: column;
+    width:25%;
+    text-align: left;
+    z-index: -97;
+    align-content: center;
+  }
+  
+  
+  /* div .content-row.a:hover {
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 1);
+  } */
+  
+  
+  
+  h2.nav-index {
+    display: block;
+    float: right;
+    width: 40px;
+    height: 100vh;
+    text-align: left;
+    writing-mode: vertical-rl;
+    text-orientation: sideways-right;
+    color:#353547
+  }
+  
+  img.profile-pic {
+    width: auto;  
+    height: auto;
+    border: solid 8px var(--pcolor-dark);
+    border-radius: 50%;
+    overflow: auto;
+  }
+  
+  img.profile-hex {
+    width: auto;
+    height: auto;
+    max-width: 500px;
+    max-height: 500px;
+    overflow: hidden;
+  }
+  
+  img.card {
+    width: auto;
+    height: auto;
+    max-width: 500px;
+    max-height: 500px;
+    overflow: hidden;
+    z-index: 0;
+    position: relative;
+  }
+  a img.card:hover{
+    transform: scale(1.1);
+  }
+  
+  /* tablet, landscape iPad, lo-res laptops ands desktops */ 
+  @media (max-width:1920px)  { 
+    img.profile-hex{
+      max-width: 200px;
+      max-height: 200px;
+    }
+    img.card {
+      max-width: 300px;
+      max-height: 300px;
+    }
+  }
+  
+  body.p.profile {
+    background-color: white;
+    color: white;
+    font-size: 18pt;
+    justify-content: center;
+  }
+  
+  .box {
+    border-radius: 50%;
+    height: 40px;
+    margin: 50px auto;
+    width: 40px;
+  }
+  
+  
