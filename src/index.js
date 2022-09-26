@@ -2,9 +2,10 @@ import ReactDOM from "react-dom";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { Layout } from "./Layout";
-import { Home } from "./Home.jsx";
-import { Thesis } from "./Thesis";
+import { Layout } from "./pages/Layout";
+import { Home } from "./pages/Home.jsx";
+import { Thesis } from "./pages/Thesis";
+import { NoPage } from "./pages/NoPage";
 
 import "./styles.css";
 import App from "./App";
@@ -27,15 +28,15 @@ export default function Site() {
 
 
 window.addEventListener("load", function () {
-  const canvas = this.document.getElementById('canvas1');
+  const canvas = document.getElementById('canvas1');
   const ctx = canvas.getContext('2d');
   canvas.width = 500;
   canvas.height = 400;
 
   const game = new Game(canvas.width, canvas.height);
 
-  ReactDOM.render(<Site />, this.document.getElementById("root"));
-  
-  createRoot(document.getElementById("mocap")).render(<App />);
+  createRoot(document.getElementById("root")).render(<Site />);
+
+  createRoot(document.getElementById("mocap")).render(<App />)
   
 });
