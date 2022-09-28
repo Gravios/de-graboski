@@ -1,0 +1,31 @@
+
+footer {
+    display: flex;
+    flex-shrink: 0;
+    margin: auto;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 0;
+    top: 0px;
+    left: 10px;
+    right: 10px;
+    height: 128px;
+    width: 76%;
+    max-width: var(--page-max-width);
+    border-left: solid var(--pcolor-dark) 4px;
+    border-right: solid var(--pcolor-dark) 4px;
+    background-color: var(--pcolor-dark);
+    z-index: 100;
+}
+
+#footer-mocap-icon {
+    transform: scaleX(-1);
+}
+
+.footer-filler {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    height: -webkit-fill-available;
+}
+

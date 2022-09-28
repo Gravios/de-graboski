@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home/Home.jsx";
-import { Thesis } from "./pages/Thesis";
+import { Thesis } from "./pages/Thesis/Thesis";
 import { NoPage } from "./pages/NoPage";
 
 import "./styles.css";

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Link } from "react-router-dom";
+import "./styles.css"
 
 export default function Navbar() {
   return (

@@ -9,6 +9,7 @@ export function Home() {
             <div className="content-column">
               <div className="content-row"><div className="content-box"></div></div>
     
+              {/* -----PROFILE----- */}
               <div className="content-row">
                 <div className="content-box">
                   <img
@@ -23,7 +24,6 @@ export function Home() {
                     Machine Learning<br />
                   </h1>
                 </div>
-    
                 <div className="content-box">
                   {/* <!-- <img
                     className="profile"
@@ -36,7 +36,7 @@ export function Home() {
     
               <div className="content-row"><div className="content-box"></div></div>
     
-              {/* <!-- action cards --> */}
+              {/* ----- action cards ----> */}
               <div className="content-row">
                 <a href="#motioncapture" >
                   <img
@@ -70,11 +70,14 @@ export function Home() {
             </div>
           </div>
         </section>
-    
+        {/* -----SPACE----- */}
         <section id="placefields">
           <div className="page-row">
             <div className="content-column">
-              <p>Add information about placefields.</p>
+              <h1>
+                SPACE
+              </h1>
+              <p>How do we go from point A to point B with confidence?</p>
               <canvas id="canvas1"></canvas>
             </div>
     

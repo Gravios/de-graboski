@@ -1,0 +1,14 @@
+
+
+div p {
+    font-size: 14pt;
+}
+
+@media (min-width: 1980px) {
+    /* hi-res laptops and desktops */
+    div p {
+        font-size: 28pt;
+    }   
+}
+  
+
