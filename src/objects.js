@@ -53,7 +53,7 @@ export function ViewCube() {
             position={[size.width / 2 - 80, size.height / 2 - 80, 0]}
             color={color}
             onPointerOut = {(e) => set(null)}
-            onPointerMove ={(e) => {console.log(Math.floor(e.faceIndex/2));set(Math.floor(e.faceIndex/2))}}
+            onPointerMove ={(e) => set(Math.floor(e.faceIndex/2))}
             onClick = {(e) => {
               const faceIndex = Math.floor(e.faceIndex*0.5);
               gsap.to(camera.position, 
