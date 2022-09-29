@@ -19,10 +19,11 @@
   div .page-row {
     width: 100%;
     max-width: 2800px;
+    min-height: 100vh;
     /* z-index: -100; */
   }
   
-  div .column-nav {
+  div .nav-column {
     height: 100%;
     width:3%;
     min-width: 80px;

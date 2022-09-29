@@ -63,9 +63,35 @@ export function Home() {
                 </a>
     
               </div>
+              <div className="content-row">
+                <a href="#motioncapture" >
+                  <img
+                    className="card"
+                    src="img/card-implant.png"
+                    alt="Motion Capture"
+                  />
+                </a>
+    
+                <a href="#motioncapture">
+                  <img
+                    className="card"
+                    src="img/card-record.png"
+                    alt="Motion Capture"
+                  />
+                </a>
+    
+                <a href="#motioncapture">
+                  <img
+                    className="card"
+                    src="img/card-record.png"
+                    alt="Motion Capture"
+                  />
+                </a>
+    
+              </div>
             </div>
     
-            <div className="column-nav">
+            <div className="nav-column">
               <h2 className="nav-index">{'\u00A0'} 0001 Justin Graboski</h2>
             </div>
           </div>
@@ -87,7 +113,7 @@ export function Home() {
               src="./img/mocap_iso_down.png"
             />
     
-            <div className="column-nav">
+            <div className="nav-column">
               <h2 className="nav-index">{'\u00A0'} 0002 Space</h2>
             </div>
           </div>
@@ -98,7 +124,7 @@ export function Home() {
             <div className="content-canvas" id="mocap">
                 <App />
               </div>            
-            <div className="column-nav">
+            <div className="nav-column">
               <h2 className="nav-index">{'\u00A0'} 0003 Motion Capture</h2>
             </div>
           </div>
@@ -109,7 +135,7 @@ export function Home() {
               <div className="content-column" id="bayesianDecoding" >
                 <p>Add information about bayesian decoding.</p>
             </div>
-            <div className="column-nav">
+            <div className="nav-column">
                 <h2 className="nav-index">&nbsp0004 Bayesian Decoder</h2>
             </div>
         </div>

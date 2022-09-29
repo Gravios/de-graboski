@@ -22,7 +22,6 @@ export default function Site() {
         </Route>
       </Routes>
     </BrowserRouter>
-
   )
 }
 
@@ -32,11 +31,7 @@ window.addEventListener("load", function () {
   // const ctx = canvas.getContext('2d');
   // canvas.width = 500;
   // canvas.height = 400;
-
   // const game = new Game(canvas.width, canvas.height);
 
-  //createRoot(document.getElementById("root")).render(<><Site /> <App /></>);
-  createRoot(document.getElementById("root")).render(<Site />);
-  //createRoot(document.getElementById("mocap")).render(<App />)
-  
+  createRoot(document.getElementById("root")).render(<Site />);  
 });

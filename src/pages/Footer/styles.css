@@ -1,5 +1,5 @@
 
-footer {
+/* footer {
     display: flex;
     flex-shrink: 0;
     margin: auto;
@@ -16,16 +16,28 @@ footer {
     border-right: solid var(--pcolor-dark) 4px;
     background-color: var(--pcolor-dark);
     z-index: 100;
-}
+} */
+
+footer {
+    position: relative;
+    margin: auto;
+    bottom: 0;
+    left: 0;
+    background-color: var(--pcolor-dark);
+    border-color: var(--pcolor-dark);
+    text-align: center;
+    width: 100%;
+    max-width: var(--page-max-width);
+    border-top-color: var(--main-border-color);
+    z-index: 100;
+  }
+
 
 #footer-mocap-icon {
     transform: scaleX(-1);
 }
 
-.footer-filler {
-    display: flex;
-    flex-direction: column;
-    flex: 1 0 auto;
-    height: -webkit-fill-available;
+#footer-prefix {
+    margin: auto;
+    height: 100%;
 }
-

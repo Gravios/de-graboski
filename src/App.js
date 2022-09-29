@@ -40,6 +40,7 @@ var time = index/sampleRate;
 
 function DisplayLine(props) {
   const ref = useRef();
+  
   const points = [...Array(frameWindowLength)];
   for (var p=0; p<frameWindowLength;p++) points[p] = new THREE.Vector3(p,100,0);
 
@@ -51,7 +52,6 @@ function DisplayLine(props) {
                         xyzData[index+i-halfFrameWindowLength].MarkerXYZ[3*6+1],
                         xyzData[index+i-halfFrameWindowLength].MarkerXYZ[3*6+2])))
   );
-
   return (
     <Fragment>
       <line
@@ -97,73 +97,71 @@ function DisplayLine2(props) {
   );
 }
 
-function DisplayLine3(props) {
-  const { gl,camera,scene } = useThree();
+// function DisplayLine3(props) {
+//   const { gl,camera,scene } = useThree();
 
-  const ref = useRef();
-  const points = [...Array(frameWindowLength)];
-  for (var p=0; p<frameWindowLength;p++) points[p] = new THREE.Vector3(p,100,0);
+//   const ref = useRef();
+//   const points = [...Array(frameWindowLength)];
+//   for (var p=0; p<frameWindowLength;p++) points[p] = new THREE.Vector3(p,100,0);
 
-  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-  useFrame(() => {
-    ref.current.geometry.setFromPoints([...Array(frameWindowLength)].map((v,i) =>
-      new THREE.Vector3(i,
-                        xyzData[index+i-halfFrameWindowLength].MarkerXYZ[3*6+1],
-                        20)))
+//   const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+//   useFrame(() => {
+//     ref.current.geometry.setFromPoints([...Array(frameWindowLength)].map((v,i) =>
+//       new THREE.Vector3(i,
+//                         xyzData[index+i-halfFrameWindowLength].MarkerXYZ[3*6+1],
+//                         20)))
+//     }
+//   ,1);
 
+// return (
+//   <Fragment>
+//           <line {...props} ref={ref} geometry={lineGeometry}>
+//             <lineBasicMaterial attach="material" color={"hotpink"} linewidth={1} linecap={'round'} linejoin={'round'} />
+//           </line>
+//   </Fragment>
+//   );
+// }
 
-    //gl.autoClear = true;
-  },1);
+// const VideoElement = (props) => {
+//   const { gl, scene, camera, size } = useThree();
+//   const virtualScene = useMemo(() => new THREE.Scene(), []);
+//   const virtualCam = useRef();
+//   const ref = useRef();
 
-return (
-  <Fragment>
-          <line {...props} ref={ref} geometry={lineGeometry}>
-            <lineBasicMaterial attach="material" color={"hotpink"} linewidth={1} linecap={'round'} linejoin={'round'} />
-          </line>
-  </Fragment>
-  );
-}
+//   const [video] = useState(() => {
+//     const vid = document.createElement("video");
+//     vid.src = url;
+//     vid.crossOrigin = "Anonymous";
+//     vid.loop = true;
+//     vid.muted = true;
+//     vid.playbackRate = 1;
+//     vid.currentTime = time;
+//     vid.play();
+//     return vid;
+//   });
 
-const VideoElement = (props) => {
-  const { gl, scene, camera, size } = useThree();
-  const virtualScene = useMemo(() => new THREE.Scene(), []);
-  const virtualCam = useRef();
-  const ref = useRef();
+//   useFrame(() => {
+//     gl.autoClear = true;
+//     gl.render(scene, camera);
+//     gl.autoClear = false;
+//     gl.clearDepth();
+//     gl.render(virtualScene, virtualCam.current);
+//   }, 1);
 
-  const [video] = useState(() => {
-    const vid = document.createElement("video");
-    vid.src = url;
-    vid.crossOrigin = "Anonymous";
-    vid.loop = true;
-    vid.muted = true;
-    vid.playbackRate = 1;
-    vid.currentTime = time;
-    vid.play();
-    return vid;
-  });
-
-  useFrame(() => {
-    gl.autoClear = true;
-    gl.render(scene, camera);
-    gl.autoClear = false;
-    gl.clearDepth();
-    gl.render(virtualScene, virtualCam.current);
-  }, 1);
-
-  return createPortal(
-      <Fragment>
-        <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 1000]} />
-          <mesh {...props} ref={ref} >
-            <planeGeometry args={[480,270, 2]} />
-            <meshStandardMaterial emissive={"white"} side={THREE.DoubleSide}>
-              <videoTexture attach="map" args={[video]} />
-              <videoTexture attach="emissiveMap" args={[video]} />
-            </meshStandardMaterial>
-          </mesh>
-        </Fragment>,
-      virtualScene
-    );
-};
+//   return createPortal(
+//       <Fragment>
+//         <OrthographicCamera ref={virtualCam} makeDefault={false} position={[0, 0, 1000]} />
+//           <mesh {...props} ref={ref} >
+//             <planeGeometry args={[480,270, 2]} />
+//             <meshStandardMaterial emissive={"white"} side={THREE.DoubleSide}>
+//               <videoTexture attach="map" args={[video]} />
+//               <videoTexture attach="emissiveMap" args={[video]} />
+//             </meshStandardMaterial>
+//           </mesh>
+//         </Fragment>,
+//       virtualScene
+//     );
+// };
 
 // TODO :: switch to instancing
 function Marker(props) {
@@ -174,7 +172,7 @@ function Marker(props) {
   const [hovered, hover] = useState(false);
   const [clicked, click] = useState(false);
   const [paused, pause] = useState(false);
-  // Subscribe this component to the render-loop, rotate the mesh every frame
+  
   useFrame((state, delta) => {
     ref.current.position.set(
       xyzData[index].MarkerXYZ[ref.markerIndex*3+0],
@@ -192,8 +190,6 @@ function Marker(props) {
       }
     },
     [items,clicked]);
-  //useFrame((state, delta) => (ref.index = ref.index ? 0 : 1))
-  // Return the view, these are regular Threejs elements expressed in JSX
 
   return (
     <Fragment>
@@ -233,19 +229,10 @@ const SpawnedLine = React.forwardRef((props,ref) => {
     );
 });
 
-const SpawnedVideo = React.forwardRef((props,ref) => {
-  const { gl,scene,camera, size} = useThree();
-  return (  <VideoElement {...props}  position={[ size.width/4 - 490 * ref.markerIndex, size.height/2 - 200, 0]} /> )
-});
-
-function Spawned(props) {
-  return (
-    <mesh {...props}>
-      <sphereGeometry attach="geometry" args={[30, 16, 16]} />
-      <meshStandardMaterial attach="material" color="hotpink" transparent />
-    </mesh>
-  )
-}
+// const SpawnedVideo = React.forwardRef((props,ref) => {
+//   const { gl,scene,camera, size} = useThree();
+//   return (  <VideoElement {...props}  position={[ size.width/4 - 490 * ref.markerIndex, size.height/2 - 200, 0]} /> )
+// });
 
 
 function Arena(props) {
@@ -259,9 +246,7 @@ function Arena(props) {
       index = THREE.MathUtils.euclideanModulo( round(time * sampleRate) ,xyzData.length-frameWindowLength-1);
     }
     pause(code.current.has('dblclick'));
-
   });
-
   return (
     <mesh
       {...props}
@@ -275,8 +260,6 @@ function Arena(props) {
 
 export default function App() {
 
-  const frameWindowLength = 360;
-  const halfFrameWindowLength = round(frameWindowLength/2);
   return (
     <Fragment>
     <Canvas
@@ -323,6 +306,7 @@ export default function App() {
       {/* <Plane args={[frameWindowLength*1.1,frameWindowLength/2]} position={[ 500/4 - 490 , 400/2 - 200, 0]}></Plane> */}
       <DisplayLine position={[0,0,0]} />
     </Canvas>
+    
     {/*<Stats showPanel={0} className="stats" />*/}
     </Fragment>
 
