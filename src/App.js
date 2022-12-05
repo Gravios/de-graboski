@@ -189,7 +189,7 @@ function Scene(props) {
     <Arena  />
     <Skeleton />
     <DisplayLine />
-    <GraphPlot />
+    {/* <GraphPlot /> */}
   </>
   )
 }
@@ -281,6 +281,8 @@ const DisplayLine2 = (props) => {
 
 
 const Skeleton = (props) => {
+
+  
   //const ref = useRef();
   return(
     <Fragment>
@@ -314,6 +316,7 @@ const Marker = (props) => {
 
   const [items, set] = useState([]);
   const handleClick  = useCallback(e => {
+      console.log(ref);
       click(!clicked);
       if (items.length<1) {
         set(items => [...items, uuid.generate()])
@@ -382,7 +385,6 @@ const SpawnedLine = React.forwardRef((props,ref) => {
 
 
 
-
 export default function App() {
 
   return (
@@ -428,9 +430,10 @@ export default function App() {
       
       {/* <Plane args={[frameWindowLength*1.1,frameWindowLength/2]} position={[ 500/4 - 490 , 400/2 - 200, 0]}></Plane> */}
       <DisplayLine position={[0,0,0]} />
-    </Canvas>
+      <Stats showPanel={0} className="stats-window" />
+      </Canvas>
     
-    {/*<Stats showPanel={0} className="stats" />*/}
+    
     </Fragment>
 
   )

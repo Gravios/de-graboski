@@ -69,6 +69,18 @@ body {
   border-right: solid var(--main-border-color) 4px;
 }
 
+
+  
+#page-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+#content-wrap {
+  padding-bottom: 2.5rem;
+}
+
+
 li,
 a,
 button {
@@ -234,4 +246,13 @@ body.p.profile {
   height: 40px;
   margin: 50px auto;
   width: 40px;
+}
+
+#stats-window {
+  width: 400px;
+  height: 300px;
+}
+#stats-window canvas {
+  width: 400px;
+  height: 300px;
 }

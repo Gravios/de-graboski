@@ -6,9 +6,13 @@ import Footer from "./Footer/Footer"
 export const Layout = () => {
     return (
         <>
-            <Navbar />
-            <Outlet />
-            <Footer />
+            <div id="page-container">
+                <div id="content-wrap">
+                    <Navbar />
+                    <Outlet />
+                </div>
+                <Footer />
+            </div>
         </>
     );
 };

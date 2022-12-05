@@ -9,7 +9,7 @@ export default function Navbar() {
         <div className="navbar">
           <i className="bx bx-menu"></i>
           <div className="logo">
-            <a href="#justin">
+            <a href="/#justin">
               <img
                 className="logo"
                 src="img/hippocampus_cajal_white_filtered.png"
@@ -23,11 +23,18 @@ export default function Navbar() {
               <i className="bx bx-x"></i>
             </div>
             <ul className="links">
-              <li>
-                <a href="/#justin">ABOUT ME</a>
-              </li>
-              <li>
-                <a href="/thesis">PHD THESIS</a>
+            <li>
+              <a href="/#justin">ABOUT ME</a>
+              <i className="bx bxs-chevron-down js-arrow arrow"></i>
+              <ul className="js-sub-menu sub-menu">
+                <li><a href="/#">Home</a></li>
+                <li><a href="/#placefields">Space</a></li>
+                <li><a href="/#motioncapture">MoCap</a></li>
+              </ul>
+            </li>
+              
+            <li>
+              <a href="/thesis">PHD THESIS</a>
                 <i className="bx bxs-chevron-down htmlcss-arrow arrow"></i>
                 <ul className="htmlCss-sub-menu sub-menu">
                   <li>

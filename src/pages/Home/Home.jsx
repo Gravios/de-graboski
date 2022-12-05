@@ -123,13 +123,14 @@ export function Home() {
           <div className="page-row">
             <div className="content-canvas" id="mocap">
                 <App />
+                
               </div>            
             <div className="nav-column">
               <h2 className="nav-index">{'\u00A0'} 0003 Motion Capture</h2>
             </div>
           </div>
         </section>
-    
+
         {/*<!-- <section id="bayes">	
         <div className="row">
               <div className="content-column" id="bayesianDecoding" >

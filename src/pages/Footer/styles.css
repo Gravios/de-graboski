@@ -19,7 +19,7 @@
 } */
 
 footer {
-    position: relative;
+    position: absolute;
     margin: auto;
     bottom: 0;
     left: 0;
@@ -37,7 +37,9 @@ footer {
     transform: scaleX(-1);
 }
 
+/*
 #footer-prefix {
     margin: auto;
     height: 100%;
 }
+*/
